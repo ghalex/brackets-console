@@ -4,10 +4,9 @@
 define(function (require, exports, module) {
     "use strict";
     
-    var AppInit       = require("utils/AppInit"),
-        Resizer       = require("utils/Resizer"),
-        StatusBar     = require("widgets/StatusBar"),
-        ConsoleHTML   = require("text!widgets/Console.html");
+    var AppInit       = brackets.getModule("utils/AppInit"),
+        Resizer       = brackets.getModule("utils/Resizer"),
+        ConsoleHTML   = require("text!html/Console.html");
     
     var _init = false;
     var $console,
