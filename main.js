@@ -6,7 +6,7 @@ define(function (require, exports, module) {
     
     var AppInit       = brackets.getModule("utils/AppInit"),
         Resizer       = brackets.getModule("utils/Resizer"),
-        ConsoleHTML   = require("text!html/Console.html");
+        ConsoleHTML   = require("text!html/console.html");
     
     var _init = false;
     var $console,
