@@ -20,22 +20,29 @@ define(function (require, exports, module) {
      * @param msg
      */
     function log(msg) {
-        var text = msg ? msg.toString().replace(/\n/g, "<br />") : msg;
-        var oddClass = (logsNr % 2) ? "odd" : "";
-        
-        $console.append("<p class='log " + oddClass + "'>" + text + "</p>");
+		var texts = msg.toString().split('\n'),
+			i = 0,
+			oddClass = (logsNr % 2) ? "odd" : "";
+		
+		for(i = 0; i < texts.length; i++) {
+			$console.append("<input type='text' class='log " + oddClass + "' value='" + texts[i] + "'/>");
+		}
+		
         $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
         
         logsNr++;
     }
     
     function error(msg) {
-        var text = msg ? msg.toString().replace(/\n/g, "<br />") : msg;
-        var oddClass = (logsNr % 2) ? "odd" : "";
+        var texts = msg.toString().split('\n'),
+			i = 0,
+			oddClass = (logsNr % 2) ? "odd" : "";
         
-        $console.append("<p class='error " + oddClass + "'>" + text + "</p>");
-        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
-        
+		for(i = 0; i < texts.length; i++) {
+			$console.append("<input type='text' class='error " + oddClass + "' value='" + texts[i] + "'/>");
+		}
+		
+        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);        
         logsNr++;
     }
     

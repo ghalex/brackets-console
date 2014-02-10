@@ -12,16 +12,23 @@
         overflow-y: scroll;
         position: relative;
     }
-    
-    #editor-console p
-    {
-        margin: 2px 2px;
-        font-size: 13px;
-        font-size: 14px;
-        font-family: monospace;
-    }
-    
-    #editor-console p.error
+	
+	#editor-console input {
+		display: block;
+		margin: 0px;
+		border: none;
+		background: none;
+		width: 90%;
+		color: #000000;
+		box-shadow: none;
+		padding: 2px 6px;
+	}
+	
+	*:focus {
+		outline: 0 !important;
+	}
+	
+    #editor-console input.error
     {
         color: #FF0000;
     }
