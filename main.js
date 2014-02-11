@@ -4,17 +4,20 @@
 define(function (require, exports, module) {
     "use strict";
     
-    var AppInit       = brackets.getModule("utils/AppInit"),
-        Resizer       = brackets.getModule("utils/Resizer"),
-        ConsoleHTML   = require("text!html/console.html");
+    var AppInit       		= brackets.getModule("utils/AppInit"),
+        Resizer       		= brackets.getModule("utils/Resizer"),
+		PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
+        ConsoleHTML   		= require("text!html/console.html"),
+		preferences 		= PreferencesManager.getPreferenceStorage("extensions.Themes-for-brackets");
     
     var _init = false;
     var $console,
+		$consoleToolbar,
         $showHide,
         $clear;
     
     var logsNr = 0;
-    
+	
     /**
      * Logs a message to console.
      * @param msg
@@ -54,11 +57,20 @@ define(function (require, exports, module) {
     AppInit.htmlReady(function () {
         $(ConsoleHTML).insertAfter("#status-bar");
 
-        _init = true;
+        _init = true;		
         $console = $("#editor-console");
+		$consoleToolbar = $("#editor-console-toolbar");
         $showHide = $("#editor-console-toolbar > #show-hide");
         $clear =  $("#editor-console-toolbar > #clear");
         
+		
+		if (preferences) {
+			var theme = preferences.getValue("theme");
+			
+			$console.addClass(theme);
+			$consoleToolbar.addClass(theme);
+		}
+	
         $showHide.click(function () {
             Resizer.toggle($console);
         });
