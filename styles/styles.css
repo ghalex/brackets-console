@@ -1,0 +1,71 @@
+#editor-console {
+    border-top: 1px solid #CCC;
+    height: 140px;
+    overflow-y: scroll;
+    position: relative;
+}
+#editor-console input {
+    display: block;
+    margin: 0px;
+    border: none;
+    background: none;
+    width: 90%;
+    color: #000000;
+    box-shadow: none;
+    padding: 2px 6px;
+}
+*:focus {
+    outline: 0 !important;
+}
+#editor-console input.error {
+    color: #FF0000;
+}
+#editor-console-toolbar {
+    line-height: 20px;
+    background-color: #F8F8F8;
+    border-top: 1px solid #CCC;
+    font-family: 'SourceSansPro', Helvetica, Arial, "Meiryo UI", "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
+    font-size: 0.9em;
+}
+#editor-console-toolbar a {
+    margin: 0px 8px;
+    color: gray;
+}
+#editor-console.light-table {
+    border-top: 1px solid #2B2B2B;
+    background: #202020;
+}
+#editor-console.light-table input {
+    color: #84E2FF;
+}
+#editor-console-toolbar.light-table {
+    background-color: #3C3F41;
+    border-top: 1px solid #3C3F41;
+}
+
+#brackets-console-button {
+    background: url(images/button.svg ) no-repeat center top transparent
+}
+#brackets-clocktrack-button.active {
+    background-position: center bottom
+}
+/*
+body.dark #brackets-clocktrack-panel.bottom-panel {
+    background-color: #444749
+}
+body.dark #brackets-clocktrack-panel.bottom-panel .vert-resizer {
+    background-color: #000
+}
+body.dark #brackets-clocktrack-panel.bottom-panel .toolbar {
+    background: #3d3f41
+}
+body.dark #brackets-clocktrack-panel.bottom-panel .toolbar .title {
+    color: #999580;
+    line-height: 24px;
+    padding-left: 30px;
+    background: url(images/icon_clocktrack.svg ) no-repeat left top transparent
+}
+body.dark #brackets-clocktrack-panel .close {
+    color: #8fddff
+}
+*/
