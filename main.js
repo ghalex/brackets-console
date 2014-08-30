@@ -62,7 +62,7 @@ define(function (require, exports, module) {
     }
 
     function _refreshPanel(event) {
-        var $this = $( event.currentTarget );
+        var $this = $(event.currentTarget);
         var name = $this.data('name');
         $this.toggleClass('active');
         $logContainer.find('.box .' + name).toggle();
@@ -79,32 +79,21 @@ define(function (require, exports, module) {
      * Logs a message to console.
      * @param msg
      */
-    function log(msg) {
+    function log(msg, caller, log) {
         if ($logContainer !== null) {
-            var texts = msg.toString().split('\n'),
-                i = 0,
-                oddClass = (logsCount % 2) ? 'odd' : '';
-            for (i = 0; i < texts.length; i++) {
-                var ln18 = {message: texts[i].replace(/(\r\n|\n|\r)/gm, ''), file: '', even: oddClass, log: 'debug'};
-                $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
-            }
             logsCount++;
+            var m = msg;
+            if (_.isObject(m)) { m = JSON.stringify(m); }
+            var ln18 = {message: m, file: '', even: (logsCount % 2) ? 'odd' : '', log: ( log !== null ) ? log : 'debug'};
+            $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
             _updateNotifierIcon();
         }
     }
 
-    function error(msg) {
+    function error(msg, caller) {
         if ($logContainer !== null) {
-            var i = 0,
-                texts = msg.toString().split('\n'),
-                oddClass = (logsCount % 2) ? 'odd' : '';
-            for (i = 0; i < texts.length; i++) {
-                var ln18 = {message: texts[i].replace(/(\r\n|\n|\r)/gm, ''), file: '', even: oddClass, log: 'error'};
-                $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
-            }
-            logsCount++;
             errorsCount++;
-            _updateNotifierIcon();
+            log(msg, caller, 'error');
         }
     }
 
@@ -145,9 +134,7 @@ define(function (require, exports, module) {
 
     });
 
-
-    AppInit.appReady(function () {
-    });
+    AppInit.appReady(function () {});
 
     var _log = console.log;
     var _warn = console.warn;
@@ -155,14 +142,12 @@ define(function (require, exports, module) {
     var _error = console.error;
 
     console.log = function () {
-        var args = _.toArray(arguments);
-        log(args[0]);
+        log(_.toArray(arguments)[0], null);
         return _log.apply(console, arguments);
     };
 
     console.error = function () {
-        var args = _.toArray(arguments);
-        error(args[0]);
+        error(_.toArray(arguments)[0], null);
         return _error.apply(console, arguments);
     };
 
