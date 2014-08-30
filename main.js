@@ -1,26 +1,40 @@
+/**
+ *
+ *
+ * @author Alexandru Ghiura ghalex@gmail.com (https://github.com/ghalex)
+ *
+ */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
 /*global define, console, brackets, $, Mustache */
-
 define(function (require, exports, module) {
     "use strict";
 
     var AppInit = brackets.getModule('utils/AppInit'),
         Resizer = brackets.getModule('utils/Resizer'),
+        PanelManager = brackets.getModule('view/PanelManager'),
+        EditorManager = brackets.getModule('editor/EditorManager'),
+        ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
         PreferencesManager = brackets.getModule('preferences/PreferencesManager');
 
-    var PREFIX = 'extensions.Themes-for-brackets';
+    var EXTENSION_ID = 'brackets-console';
 
-    var ButtonHTML = require('text!htmlContent/button.html'),
-        ConsoleHTML = require('text!htmlContent/console.html');
+    // UI templates
+    var RowHTML = require('text!htmlContent/row.html'),
+        PanelHTML = require('text!htmlContent/panel.html'),
+        ButtonHTML = require('text!htmlContent/button.html');
 
-    var logsNr = 0,
-        _init = false,
-        prefs = PreferencesManager.getExtensionPrefs(PREFIX);
+    // Load preferences var
+    var logsCount = 0,
+        errorsCount = 0,
+        debugPrefs = PreferencesManager.getExtensionPrefs('debug'),
+        extensionPrefs = PreferencesManager.getExtensionPrefs(EXTENSION_ID);
 
+    // Variables
     var $clear,
-        $button,
-        $console,
-        /*$showHide,*/
+        $appPanel,
+        $appButton,
+        $closeButton,
+        $logContainer,
         $consoleToolbar;
 
     /**
@@ -30,65 +44,75 @@ define(function (require, exports, module) {
     function log(msg) {
         var texts = msg.toString().split('\n'),
             i = 0,
-            oddClass = (logsNr % 2) ? 'odd' : '';
-        for(i = 0; i < texts.length; i++) {
-            $console.append('<input type="text" class="log ' + oddClass + '" value="' + texts[i] + '"/>');
+            oddClass = (logsCount % 2) ? 'odd' : '';
+        for (i = 0; i < texts.length; i++) {
+            // $logContainer.append('<input type="text" class="log ' + oddClass + '" value="' + texts[i] + '"/>');
+            var ln18 = {message:texts[i], file:'', class:oddClass};
+            $logContainer.append(Mustache.render(RowHTML, ln18));
         }
-        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
-        logsNr++;
+        logsCount++;
+        // $appPanel.animate({ scrollTop: $appPanel[0].scrollHeight }, 10);
     }
 
     function error(msg) {
         var i = 0,
             texts = msg.toString().split('\n'),
-            oddClass = (logsNr % 2) ? 'odd' : '';
-        for(i = 0; i < texts.length; i++) {
-            $console.append('<input type="text" class="error ' + oddClass + '" value="' + texts[i] + '"/>');
+            oddClass = (logsCount % 2) ? 'odd' : '';
+        for (i = 0; i < texts.length; i++) {
+            // $logContainer.append('<input type="text" class="error ' + oddClass + '" value="' + texts[i] + '"/>');
+            var ln18 = {message:texts[i], file:'', class:oddClass};
+            $logContainer.append(Mustache.render(RowHTML, ln18));
         }
-        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
-        logsNr++;
+        logsCount++;
+        // $appPanel.animate({ scrollTop: $appPanel[0].scrollHeight }, 10);
     }
 
-    function clear() {
-        $console.html('');
-        logsNr = 0;
+    function _clearConsole() {
+        $logContainer.html('');
+        logsCount = 0;
+        errorsCount = 0;
     }
 
-    function _handlerPanelVisibility(){
+    function _handlerPanelVisibility() {
+        $appButton.toggleClass('active');
+        Resizer.toggle($appPanel);
+        if (!$appButton.hasClass('active')) {
+            EditorManager.focusEditor();
+        }
     }
 
+    /**
+     *
+     * HTML ready
+     * Load StyleSheet
+     * Create Panel
+     * Create Button
+     * Add listeners toggle panel visible/hide
+     *
+     */
     AppInit.htmlReady(function () {
 
-        $(ConsoleHTML).insertAfter("#status-bar");
+        ExtensionUtils.loadStyleSheet(module, "styles/styles.css")
+            .done(function () {
 
-        $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, { 'label': 'Open console' }));
-        $button = $('#brackets-console-button').on('click', _handlerPanelVisibility).hide();
+                var minHeight = 100;
+                var ln18 = { 'label': 'Console Panel' };
+                PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, ln18)), minHeight);
+                $appPanel = $('#' + EXTENSION_ID + '-panel');
+                $logContainer = $('#' + EXTENSION_ID + '-panel .table-container');
+                $closeButton = $('#' + EXTENSION_ID + '-panel .toolbar .close').on('click', _handlerPanelVisibility);
 
-        _init = true;
-        $console = $("#editor-console");
-        $consoleToolbar = $("#editor-console-toolbar");
-        /*$showHide = $("#editor-console-toolbar > #show-hide");*/
-        $clear =  $("#editor-console-toolbar > #clear");
+                ln18 = { 'label': 'Open console' };
+                $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, ln18));
+                $appButton = $('#' + EXTENSION_ID + '-button').on('click', _handlerPanelVisibility).hide();
 
-        if (prefs) {
-            var theme = preferences.get("theme");
-            $button.addClass(theme);
-            $console.addClass(theme);
-            $consoleToolbar.addClass(theme);
-        }
+                $appButton.show();
 
-        /*
-        $showHide.click(function () {
-            Resizer.toggle($console);
-        });
-        */
+            });
 
-        $clear.click(function () {
-            clear();
-        });
+    });
 
-        Resizer.makeResizable($console.get(0), Resizer.DIRECTION_VERTICAL, Resizer.POSITION_BOTTOM, 0);
-
+    AppInit.appReady(function () {
     });
 
     var _log = console.log;
@@ -96,18 +120,20 @@ define(function (require, exports, module) {
 
     console.log = function () {
         var arg = arguments;
+        console.log(arg);
         log(arg[0]);
         return _log.apply(console, arguments);
     };
-
     console.error = function () {
         var arg = arguments;
         error(arg[0]);
+        errorsCount++;
         return _error.apply(console, arguments);
     };
 
     // Exports
     exports.log = log;
     exports.error = error;
-    exports.clear = clear;
+    exports.clear = _clearConsole;
+
 });

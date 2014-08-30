@@ -1,0 +1,31 @@
+@black: #000;
+@blue: #8fddff;
+@dark: #444749;
+@grey: #3d3f41;
+@light: #999580;
+@icon: 'images/icon_button.svg';
+#brackets-console-panel.bottom-panel
+{
+    background-color: @dark;
+    .vert-resizer {
+        background-color: @black
+    }
+    .toolbar{
+        background:@grey;
+        .title {
+            color: @light;
+            line-height: 24px;
+            padding-left: 30px;
+            background: url(@icon) no-repeat left top transparent
+        }
+        .close{
+            color: @blue;
+        }
+    }
+}
+#brackets-console-button {
+    background: url(@icon) no-repeat center top transparent;
+    &.active{
+        background-position: center bottom;
+    }
+}
