@@ -1,31 +1,136 @@
-@black: #000;
+@dark:#3C3F41;
+@light-dark:#444749;
+@selected:#2d2e30;
+@selected-border-top:rgba(0,0,0,0.12);
+@selected-border-bottom:rgba(255,255,255,0.12);
+@unactive:rgba(45, 46, 48, 0.25);
+@light: #fff;
+@red:#f74687;
 @blue: #8fddff;
-@dark: #444749;
-@grey: #3d3f41;
-@light: #999580;
-@icon: 'images/icon_button.svg';
-#brackets-console-panel.bottom-panel
-{
-    background-color: @dark;
-    .vert-resizer {
-        background-color: @black
-    }
-    .toolbar{
-        background:@grey;
-        .title {
-            color: @light;
-            line-height: 24px;
-            padding-left: 30px;
-            background: url(@icon) no-repeat left top transparent
+@icon:'images/button.svg';
+@shadow: rgba(0, 0, 0, 0.498039) 0px 1px 2px;
+@orange:#FF6500;
+@green:#ACE539;
+@grey:#999580;
+#brackets-console-panel{
+    &.bottom-panel{
+        border:0;
+        color:@light;
+        text-shadow: @shadow;
+        button{ cursor: pointer; }
+        .toolbar{
+            padding-top:4px;
+            background:@dark;
+            padding-bottom:2px;
+            text-align: center;
+            .left, .right{}
+            .center{ margin: 0 auto; }
+            .title {
+                color:@grey;
+                cursor:pointer;
+                text-align: left;
+                line-height: 24px;
+                padding-left: 30px;
+                background: url(@icon) no-repeat left top transparent;
+            }
+            .close{
+                color:@blue;
+                padding:0 10px;
+                text-align: center;
+            }
+            .small{
+                color:@light;
+                border:0;
+                height: 100%;
+                border-radius:0;
+                margin-right: 0;
+                margin-left: 1px;
+                padding: 5px 17px;
+                background: @unactive;
+                border-top: 1px solid @unactive;
+                border-bottom: 1px solid @unactive;
+                &.clear,
+                &:hover{
+                    color:@blue;
+                    background-color: @selected;
+                    border-top: 1px solid @selected-border-top;
+                    border-bottom: 1px solid @selected-border-bottom;
+                }
+                &.clear{ color:@light; }
+                &.active{ color:@blue; }
+            }
         }
-        .close{
-            color: @blue;
+        .table-container{
+            overflow-y: auto;
+            position: relative;
+            overflow-x: hidden;
+            background:@light-dark;
+            .box{
+                top:0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: block;
+                position: absolute;
+            }
         }
     }
 }
 #brackets-console-button {
+    position: relative;
     background: url(@icon) no-repeat center top transparent;
     &.active{
         background-position: center bottom;
     }
+    .counts{
+
+        top:12px;
+        left:12px;
+        position: absolute;
+
+        border:0;
+        width:13px;
+        height:13px;
+        color:@light;
+        display: block;
+        background:@red;
+        font-size: 0.75em;
+        line-height: 1.2em;
+        text-align: center;
+        border-radius:10px;
+        text-indent:-0.15em;
+
+    }
+}
+/** --------------------------------
+ *
+ * Specific
+ *
+ */
+#brackets-console-panel{
+    ul{
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+    /*
+    .box{
+        .line{
+            color:@light;
+            padding:7px 7px;
+            overflow: hidden;
+            {
+                > *{
+                    display: block;
+                    font-size: 0.9em;
+                    line-height: 1.1em;
+                    &.error, &.debug{ width:3px;padding:0; }
+                    &.error{ background-color:@red;}
+                    &.message{ width:auto; }
+                    &.file{ width:80px; }
+                }
+            }
+        }
+    }
+    */
 }

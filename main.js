@@ -5,11 +5,13 @@
  *
  */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
-/*global define, console, brackets, $, Mustache */
+/*global define, console, brackets, _, $, Mustache */
 define(function (require, exports, module) {
+
     "use strict";
 
-    var AppInit = brackets.getModule('utils/AppInit'),
+    var _ = brackets.getModule('thirdparty/lodash'),
+        AppInit = brackets.getModule('utils/AppInit'),
         Resizer = brackets.getModule('utils/Resizer'),
         PanelManager = brackets.getModule('view/PanelManager'),
         EditorManager = brackets.getModule('editor/EditorManager'),
@@ -30,47 +32,30 @@ define(function (require, exports, module) {
         extensionPrefs = PreferencesManager.getExtensionPrefs(EXTENSION_ID);
 
     // Variables
-    var $clear,
-        $appPanel,
+    var $appPanel,
         $appButton,
-        $closeButton,
-        $logContainer,
-        $consoleToolbar;
+        $logContainer;
 
-    /**
-     * Logs a message to console.
-     * @param msg
-     */
-    function log(msg) {
-        var texts = msg.toString().split('\n'),
-            i = 0,
-            oddClass = (logsCount % 2) ? 'odd' : '';
-        for (i = 0; i < texts.length; i++) {
-            // $logContainer.append('<input type="text" class="log ' + oddClass + '" value="' + texts[i] + '"/>');
-            var ln18 = {message:texts[i], file:'', class:oddClass};
-            $logContainer.append(Mustache.render(RowHTML, ln18));
-        }
-        logsCount++;
-        // $appPanel.animate({ scrollTop: $appPanel[0].scrollHeight }, 10);
+    function _updateNotifierIcon() {
+
+        var $input = $('#' + EXTENSION_ID + '-panel .toolbar .error');
+        var label = $input.find('span').first().text();
+        $input.html('');
+        $input.html('<em>(' + errorsCount + ')</em>&nbsp;<span>' + label + '<span>');
+
+        $input = $('#' + EXTENSION_ID + '-panel .toolbar .debug');
+        label = $input.find('span').first().text();
+        $input.html('');
+        $input.html('<em>(' + (logsCount - errorsCount) + ')</em>&nbsp;<span>' + label + '<span>');
+
+        $input = $('#brackets-console-button .counts');
+        $input.toggle(errorsCount > 0);
+        $input.find('em').first().text(errorsCount);
+
     }
 
-    function error(msg) {
-        var i = 0,
-            texts = msg.toString().split('\n'),
-            oddClass = (logsCount % 2) ? 'odd' : '';
-        for (i = 0; i < texts.length; i++) {
-            // $logContainer.append('<input type="text" class="error ' + oddClass + '" value="' + texts[i] + '"/>');
-            var ln18 = {message:texts[i], file:'', class:oddClass};
-            $logContainer.append(Mustache.render(RowHTML, ln18));
-        }
-        logsCount++;
-        // $appPanel.animate({ scrollTop: $appPanel[0].scrollHeight }, 10);
-    }
-
-    function _clearConsole() {
-        $logContainer.html('');
-        logsCount = 0;
-        errorsCount = 0;
+    function _toggleLogsVisibility(trigger, type) {
+        $(trigger).toggleClass('.active');
     }
 
     function _handlerPanelVisibility() {
@@ -81,59 +66,116 @@ define(function (require, exports, module) {
         }
     }
 
+    function clearConsole() {
+        $logContainer.find('.box').html('');
+        logsCount = 0;
+        errorsCount = 0;
+        _updateNotifierIcon();
+    }
+
+    /**
+     * Logs a message to console.
+     * @param msg
+     */
+    function log(msg) {
+        if ($logContainer !== null) {
+            var texts = msg.toString().split('\n'),
+                i = 0,
+                oddClass = (logsCount % 2) ? 'odd' : '';
+            for (i = 0; i < texts.length; i++) {
+                var ln18 = {message: texts[i].replace(/(\r\n|\n|\r)/gm, ''), file: '', even: oddClass, log: 'debug'};
+                $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
+            }
+            logsCount++;
+            _updateNotifierIcon();
+        }
+    }
+
+    function error(msg) {
+        if ($logContainer !== null) {
+            var i = 0,
+                texts = msg.toString().split('\n'),
+                oddClass = (logsCount % 2) ? 'odd' : '';
+            for (i = 0; i < texts.length; i++) {
+                var ln18 = {message: texts[i].replace(/(\r\n|\n|\r)/gm, ''), file: '', even: oddClass, log: 'error'};
+                $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
+            }
+            logsCount++;
+            errorsCount++;
+            _updateNotifierIcon();
+        }
+    }
+
     /**
      *
      * HTML ready
      * Load StyleSheet
      * Create Panel
      * Create Button
+     * Get count notifier
+     * Get logs container
+     * Get close button
      * Add listeners toggle panel visible/hide
      *
      */
     AppInit.htmlReady(function () {
 
-        ExtensionUtils.loadStyleSheet(module, "styles/styles.css")
-            .done(function () {
+        ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
 
-                var minHeight = 100;
-                var ln18 = { 'label': 'Console Panel' };
-                PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, ln18)), minHeight);
-                $appPanel = $('#' + EXTENSION_ID + '-panel');
-                $logContainer = $('#' + EXTENSION_ID + '-panel .table-container');
-                $closeButton = $('#' + EXTENSION_ID + '-panel .toolbar .close').on('click', _handlerPanelVisibility);
+        var $this = $this;
+        var minHeight = 100;
+        var ln18 = { 'label': 'Console Panel' };
+        PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, ln18)), minHeight);
+        $appPanel = $('#' + EXTENSION_ID + '-panel');
+        $logContainer = $('#' + EXTENSION_ID + '-panel .table-container');
 
-                ln18 = { 'label': 'Open console' };
-                $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, ln18));
-                $appButton = $('#' + EXTENSION_ID + '-button').on('click', _handlerPanelVisibility).hide();
+        var base = '#' + EXTENSION_ID + '-panel .toolbar';
+        $(base + ' .clear').on('click', clearConsole);
+        $(base + ' .close').on('click', _handlerPanelVisibility);
+        $(base + ' .title').on('click', _handlerPanelVisibility);
+        $(base + ' .error').on('click', function(){
+            $(this).toggleClass('active');
+            $logContainer.find('.box .error').toggle();
+        });
+        $(base + ' .debug').on('click', function(){
+            $(this).toggleClass('active');
+            $logContainer.find('.box .debug').toggle();
+        });
 
-                $appButton.show();
+        ln18 = { 'label': 'Open console' };
+        $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, ln18));
+        $appButton = $('#' + EXTENSION_ID + '-button').on('click', _handlerPanelVisibility);
 
-            });
+        _updateNotifierIcon();
 
     });
+
 
     AppInit.appReady(function () {
     });
 
     var _log = console.log;
+    var _warn = console.warn;
+    var _debug = console.debug;
     var _error = console.error;
 
     console.log = function () {
-        var arg = arguments;
-        console.log(arg);
-        log(arg[0]);
+        var args = _.toArray(arguments);
+        log(args[0]);
         return _log.apply(console, arguments);
     };
+
     console.error = function () {
-        var arg = arguments;
-        error(arg[0]);
-        errorsCount++;
+        var args = _.toArray(arguments);
+        error(args[0]);
         return _error.apply(console, arguments);
     };
 
     // Exports
     exports.log = log;
+    // exports.warn = log;
     exports.error = error;
-    exports.clear = _clearConsole;
+    // exports.debug = error;
+    exports.clear = clearConsole;
 
 });

@@ -1,8 +1,18 @@
 <div id="brackets-console-panel" class="bottom-panel vert-resizable top-resizer">
-    <div class="toolbar simple-toolbar-layout">
-        <div class="title">{{label}}</div>
-        <a href="#" class="close">Clear</a>
-        <a href="#" class="close">&times;</a>
+    <div class="toolbar simple-toolbar-layout clearfix">
+        <div class="title left">
+            <span>{{label}}</span>
+        </div>
+        <div class="center">
+            <button class="debug small"><span>debugs</span></button>
+            <button class="error small"><span>errors</span></button>
+            <button class="clear small">clear</button>
+        </div>
+        <div class="right">
+            <button class="close">&times;</button>
+        </div>
     </div>
-    <table class="table-container"></table>
+    <div class="table-container resizable-content">
+        <ul class="box"></ul>
+    </div>
 </div>
