@@ -41,29 +41,31 @@ define(function (require, exports, module) {
         var $input = $('#' + EXTENSION_ID + '-panel .toolbar .error');
         var label = $input.find('span').first().text();
         $input.html('');
-        $input.html('<em>(' + errorsCount + ')</em>&nbsp;<span>' + label + '<span>');
+        $input.html('<span>' + label + '</span>&nbsp;<em>(' + errorsCount + ')</em>');
 
         $input = $('#' + EXTENSION_ID + '-panel .toolbar .debug');
         label = $input.find('span').first().text();
         $input.html('');
-        $input.html('<em>(' + (logsCount - errorsCount) + ')</em>&nbsp;<span>' + label + '<span>');
+        $input.html('<span>' + label + '</span>&nbsp;<em>(' + (logsCount - errorsCount) + ')</em>');
 
         $input = $('#brackets-console-button .counts');
         $input.toggle(errorsCount > 0);
         $input.find('em').first().text(errorsCount);
 
     }
-
-    function _toggleLogsVisibility(trigger, type) {
-        $(trigger).toggleClass('.active');
-    }
-
     function _handlerPanelVisibility() {
         $appButton.toggleClass('active');
         Resizer.toggle($appPanel);
         if (!$appButton.hasClass('active')) {
             EditorManager.focusEditor();
         }
+    }
+
+    function _refreshPanel(event) {
+        var $this = $( event.currentTarget );
+        var name = $this.data('name');
+        $this.toggleClass('active');
+        $logContainer.find('.box .' + name).toggle();
     }
 
     function clearConsole() {
@@ -122,7 +124,6 @@ define(function (require, exports, module) {
 
         ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
 
-        var $this = $this;
         var minHeight = 100;
         var ln18 = { 'label': 'Console Panel' };
         PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, ln18)), minHeight);
@@ -133,14 +134,8 @@ define(function (require, exports, module) {
         $(base + ' .clear').on('click', clearConsole);
         $(base + ' .close').on('click', _handlerPanelVisibility);
         $(base + ' .title').on('click', _handlerPanelVisibility);
-        $(base + ' .error').on('click', function(){
-            $(this).toggleClass('active');
-            $logContainer.find('.box .error').toggle();
-        });
-        $(base + ' .debug').on('click', function(){
-            $(this).toggleClass('active');
-            $logContainer.find('.box .debug').toggle();
-        });
+        $(base + ' .error').on('click', _refreshPanel);
+        $(base + ' .debug').on('click', _refreshPanel);
 
         ln18 = { 'label': 'Open console' };
         $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, ln18));

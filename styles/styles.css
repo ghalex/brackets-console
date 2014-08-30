@@ -13,7 +13,7 @@
   padding-bottom: 2px;
   text-align: center;
 }
-#brackets-console-panel.bottom-panel .toolbar .center {
+#brackets-console-panel.bottom-panel .toolbar .filters {
   margin: 0 auto;
 }
 #brackets-console-panel.bottom-panel .toolbar .title {
@@ -29,7 +29,7 @@
   padding: 0 10px;
   text-align: center;
 }
-#brackets-console-panel.bottom-panel .toolbar .small {
+#brackets-console-panel.bottom-panel .toolbar .filters > * {
   color: #ffffff;
   border: 0;
   height: 100%;
@@ -41,17 +41,17 @@
   border-top: 1px solid rgba(45, 46, 48, 0.25);
   border-bottom: 1px solid rgba(45, 46, 48, 0.25);
 }
-#brackets-console-panel.bottom-panel .toolbar .small.clear,
-#brackets-console-panel.bottom-panel .toolbar .small:hover {
+#brackets-console-panel.bottom-panel .toolbar .filters > *.clear,
+#brackets-console-panel.bottom-panel .toolbar .filters > *:hover {
   color: #8fddff;
   background-color: #2d2e30;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
-#brackets-console-panel.bottom-panel .toolbar .small.clear {
+#brackets-console-panel.bottom-panel .toolbar .filters > *.clear {
   color: #ffffff;
 }
-#brackets-console-panel.bottom-panel .toolbar .small.active {
+#brackets-console-panel.bottom-panel .toolbar .filters > *.active {
   color: #8fddff;
 }
 #brackets-console-panel.bottom-panel .table-container {
@@ -96,30 +96,28 @@
  * Specific
  *
  */
-#brackets-console-panel {
-  /*
-    .box{
-        .line{
-            color:@light;
-            padding:7px 7px;
-            overflow: hidden;
-            {
-                > *{
-                    display: block;
-                    font-size: 0.9em;
-                    line-height: 1.1em;
-                    &.error, &.debug{ width:3px;padding:0; }
-                    &.error{ background-color:@red;}
-                    &.message{ width:auto; }
-                    &.file{ width:80px; }
-                }
-            }
-        }
-    }
-    */
-}
 #brackets-console-panel ul {
   margin: 0;
   padding: 0;
   list-style-type: none;
+}
+#brackets-console-panel .box .line {
+  width: 100%;
+  overflow: hidden;
+}
+#brackets-console-panel .box .line > span {
+  color: #ffffff;
+  padding: 7px 7px;
+  font-size: 0.9em;
+  margin-bottom: 1px;
+  line-height: 1.1em;
+  display: inline-block;
+  border-left: 3px solid transparent;
+}
+#brackets-console-panel .box .line.odd {
+  background: rgba(0, 0, 0, 0.05);
+}
+#brackets-console-panel .box .line.error > span {
+  color: #f74687;
+  border-left: 3px solid #f74687;
 }

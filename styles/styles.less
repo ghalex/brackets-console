@@ -23,8 +23,9 @@
             background:@dark;
             padding-bottom:2px;
             text-align: center;
-            .left, .right{}
-            .center{ margin: 0 auto; }
+            .filters{
+                margin: 0 auto;
+            }
             .title {
                 color:@grey;
                 cursor:pointer;
@@ -38,7 +39,7 @@
                 padding:0 10px;
                 text-align: center;
             }
-            .small{
+            .filters > *{
                 color:@light;
                 border:0;
                 height: 100%;
@@ -113,24 +114,26 @@
         padding: 0;
         list-style-type: none;
     }
-    /*
     .box{
         .line{
-            color:@light;
-            padding:7px 7px;
+            width: 100%;
             overflow: hidden;
-            {
-                > *{
-                    display: block;
-                    font-size: 0.9em;
-                    line-height: 1.1em;
-                    &.error, &.debug{ width:3px;padding:0; }
-                    &.error{ background-color:@red;}
-                    &.message{ width:auto; }
-                    &.file{ width:80px; }
-                }
+            > span{
+                color:@light;
+                padding:7px 7px;
+                font-size: 0.9em;
+                margin-bottom:1px;
+                line-height: 1.1em;
+                display: inline-block;
+                border-left: 3px solid transparent;
+            }
+            &.odd{
+                background:rgba(0, 0, 0, 0.05);
+            }
+            &.error > span{
+                color:@red;
+                border-left: 3px solid @red;
             }
         }
     }
-    */
 }
