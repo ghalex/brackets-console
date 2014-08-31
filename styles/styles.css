@@ -41,23 +41,25 @@
   border-top: 1px solid rgba(45, 46, 48, 0.25);
   border-bottom: 1px solid rgba(45, 46, 48, 0.25);
 }
-#brackets-console-panel.bottom-panel .toolbar .filters > *.clear,
 #brackets-console-panel.bottom-panel .toolbar .filters > *:hover {
   color: #8fddff;
   background-color: #2d2e30;
   border-top: 1px solid rgba(0, 0, 0, 0.12);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
-#brackets-console-panel.bottom-panel .toolbar .filters > *.clear {
-  color: #3c3f41;
-  background: #ace539;
-}
-#brackets-console-panel.bottom-panel .toolbar .filters > *.clear:hover {
-  background: #94d01b;
-}
 #brackets-console-panel.bottom-panel .toolbar .filters > *.active {
   color: #8fddff;
   background: #2d2e30;
+}
+#brackets-console-panel.bottom-panel .toolbar .filters > *.clear {
+  background: #ace539;
+  color: #34480a;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+#brackets-console-panel.bottom-panel .toolbar .filters > *.clear:hover {
+  color: #000000;
+  background: #b5e850;
 }
 #brackets-console-panel.bottom-panel .table-container {
   overflow-y: auto;

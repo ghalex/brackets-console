@@ -49,21 +49,26 @@
                     background: @unactive;
                     border-top: 1px solid @unactive;
                     border-bottom: 1px solid @unactive;
-                    &.clear,
                     &:hover{
                         color:@blue;
                         background-color: @selected;
                         border-top: 1px solid @selected-border-top;
                         border-bottom: 1px solid @selected-border-bottom;
                     }
+                    &.active{
+                        color:@blue;
+                        background:@selected;
+                    }
                     &.clear{
-                        color:@dark;
                         background:@green;
+                        color:darken(@green, 40%);
+                        border-top: 1px solid @selected-border-top;
+                        border-bottom: 1px solid @selected-border-bottom;
                         &:hover{
-                            background:darken(@green, 10%);
+                            color:darken(@green, 70%);
+                            background:lighten(@green, 5%);
                         }
                     }
-                    &.active{ color:@blue;background:@selected; }
                 }
             }
         }
