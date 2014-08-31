@@ -7,52 +7,81 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
 /*global define, console, brackets, _, $, Mustache */
 define(function (require, exports, module) {
-
     "use strict";
+/** ------------------------------------
 
+    Modules
+
+*/
     var _ = brackets.getModule('thirdparty/lodash'),
+        Menus = brackets.getModule("command/Menus"),
         AppInit = brackets.getModule('utils/AppInit'),
         Resizer = brackets.getModule('utils/Resizer'),
         PanelManager = brackets.getModule('view/PanelManager'),
         EditorManager = brackets.getModule('editor/EditorManager'),
         ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
+        CommandManager = brackets.getModule("command/CommandManager"),
         PreferencesManager = brackets.getModule('preferences/PreferencesManager');
+/** ------------------------------------
 
-    var EXTENSION_ID = 'brackets-console';
+    Globals
 
-    // UI templates
-    var RowHTML = require('text!htmlContent/row.html'),
+*/
+    var EXTENSION_ID = 'brackets-console',
+        SHOWPANEL_COMMAND_ID = EXTENSION_ID + '.showpanel';
+/** ------------------------------------
+
+    UI Templates
+
+*/
+    var Strings = require('./ln18'),
+        RowHTML = require('text!htmlContent/row.html'),
         PanelHTML = require('text!htmlContent/panel.html'),
         ButtonHTML = require('text!htmlContent/button.html');
+/** ------------------------------------
 
-    // Load preferences var
+    Variables
+
+*/
     var logsCount = 0,
+        warnsCount = 0,
         errorsCount = 0,
         debugPrefs = PreferencesManager.getExtensionPrefs('debug'),
         extensionPrefs = PreferencesManager.getExtensionPrefs(EXTENSION_ID);
+/** ------------------------------------
 
-    // Variables
+    UI Variables
+
+*/
     var $appPanel,
         $appButton,
         $logContainer;
+/** ------------------------------------
 
+    Private Functions
+
+*/
+    /**
+     *
+     * MAJ des compteurs dans le panneau
+     * MAJ du compteur de l'icone
+     *
+     */
     function _updateNotifierIcon() {
-
-        var $input = $('#' + EXTENSION_ID + '-panel .toolbar .error');
-        var label = $input.find('span').first().text();
-        $input.html('');
-        $input.html('<span>' + label + '</span>&nbsp;<em>(' + errorsCount + ')</em>');
-
-        $input = $('#' + EXTENSION_ID + '-panel .toolbar .debug');
-        label = $input.find('span').first().text();
-        $input.html('');
-        $input.html('<span>' + label + '</span>&nbsp;<em>(' + (logsCount - errorsCount) + ')</em>');
-
-        $input = $('#brackets-console-button .counts');
+        $('#' + EXTENSION_ID + '-panel .toolbar .warn small em').first().text((warnsCount));
+        $('#' + EXTENSION_ID + '-panel .toolbar .error small em').first().text((errorsCount));
+        $('#' + EXTENSION_ID + '-panel .toolbar .debug small em').first().text((logsCount - (errorsCount + warnsCount)));
+        var $input = $('#brackets-console-button .counts');
         $input.toggle(errorsCount > 0);
         $input.find('em').first().text(errorsCount);
-
     }
+
+    /**
+     *
+     * Masque/Affiche le panneau
+     * MAJ de la class de l'icone du panneau
+     *
+     */
     function _handlerPanelVisibility() {
         $appButton.toggleClass('active');
         Resizer.toggle($appPanel);
@@ -68,35 +97,56 @@ define(function (require, exports, module) {
         $logContainer.find('.box .' + name).toggle();
     }
 
+    function __getErrorObject() {
+        var traces = (new Error).stack.split("\n");
+        traces.shift();
+        var current = traces[0].trim(),
+            file = current.match(/(file:\/\/)([a-zA-Z]:\\)(.)*?(.js)/gi)[0],
+            col = current.match(/(:([0-9]*))/gi)[2].split(':')[1],
+            line = current.match(/(:([0-9]*))/gi)[1].split(':')[1];
+        return { fileName: file, lineNumber: line, column: col, stack: traces };
+    }
+/** ------------------------------------
+
+    Console Functions
+
+*/
     function clearConsole() {
         $logContainer.find('.box').html('');
         logsCount = 0;
+        warnsCount = 0;
         errorsCount = 0;
         _updateNotifierIcon();
     }
 
-    /**
-     * Logs a message to console.
-     * @param msg
-     */
-    function log(msg, caller, log) {
+    function log(msg, err, type) {
         if ($logContainer !== null) {
             logsCount++;
-            var m = msg;
-            if (_.isObject(m)) { m = JSON.stringify(m); }
-            var ln18 = {message: m, file: '', even: (logsCount % 2) ? 'odd' : '', log: ( log !== null ) ? log : 'debug'};
+            if (_.isObject(msg)) { msg = JSON.stringify(msg); }
+            var ln18 = _.extend(err, { message: msg, even: (logsCount % 2) ? 'odd' : '', type: type});
             $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
             _updateNotifierIcon();
         }
     }
 
-    function error(msg, caller) {
+    function warn(msg, err) {
         if ($logContainer !== null) {
-            errorsCount++;
-            log(msg, caller, 'error');
+            warnsCount++;
+            log(msg, err, 'warn');
         }
     }
 
+    function error(msg, err) {
+        if ($logContainer !== null) {
+            errorsCount++;
+            log(msg, err, 'error');
+        }
+    }
+/** ------------------------------------
+
+    Extension Inits
+
+*/
     /**
      *
      * HTML ready
@@ -114,48 +164,82 @@ define(function (require, exports, module) {
         ExtensionUtils.loadStyleSheet(module, "styles/styles.css");
 
         var minHeight = 100;
-        var ln18 = { 'label': 'Console Panel' };
-        PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, ln18)), minHeight);
+        PanelManager.createBottomPanel(EXTENSION_ID + '.panel', $(Mustache.render(PanelHTML, Strings)), minHeight);
         $appPanel = $('#' + EXTENSION_ID + '-panel');
         $logContainer = $('#' + EXTENSION_ID + '-panel .table-container');
 
         var base = '#' + EXTENSION_ID + '-panel .toolbar';
         $(base + ' .clear').on('click', clearConsole);
+
         $(base + ' .close').on('click', _handlerPanelVisibility);
         $(base + ' .title').on('click', _handlerPanelVisibility);
+
         $(base + ' .error').on('click', _refreshPanel);
         $(base + ' .debug').on('click', _refreshPanel);
+        $(base + ' .warn').on('click', _refreshPanel);
 
-        ln18 = { 'label': 'Open console' };
-        $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, ln18));
+        $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, Strings));
         $appButton = $('#' + EXTENSION_ID + '-button').on('click', _handlerPanelVisibility);
+        $($appButton).find('em').first().hide();
 
         _updateNotifierIcon();
+
 
     });
 
     AppInit.appReady(function () {});
+/** ------------------------------------
 
-    var _log = console.log;
-    var _warn = console.warn;
-    var _debug = console.debug;
-    var _error = console.error;
+    Commands and Menus
 
-    console.log = function () {
-        log(_.toArray(arguments)[0], null);
-        return _log.apply(console, arguments);
-    };
+*/
+    function __registerCommands(){
+        CommandManager.register( "Show Console", SHOWPANEL_COMMAND_ID, _handlerPanelVisibility);
+    }
+    __registerCommands();
 
-    console.error = function () {
-        error(_.toArray(arguments)[0], null);
-        return _error.apply(console, arguments);
-    };
 
-    // Exports
-    exports.log = log;
-    // exports.warn = log;
-    exports.error = error;
-    // exports.debug = error;
-    exports.clear = clearConsole;
+    function __registerWindowsMenu(){
+        var menu = Menus.addMenu('Windows', 'brackets.penls-windows.menu', Menus.AFTER, Menus.AppMenuBar.NAVIGATE_MENU);
+        menu.addMenuItem(SHOWPANEL_COMMAND_ID);
+    }
+    __registerWindowsMenu();
+/** ------------------------------------
+
+    Console Proto
+
+*/
+    function __initConsoleWrapper(){
+        var _log = console.log,
+            _warn = console.warn,
+            _debug = console.debug,
+            _error = console.error;
+
+        console.log = function () {
+            var obj = __getErrorObject();
+            log(_.toArray(arguments)[0], obj, 'debug');
+            return _log.apply(console, arguments);
+        };
+
+        console.error = function () {
+            var obj = __getErrorObject();
+            error(_.toArray(arguments)[0], obj);
+            return _error.apply(console, arguments);
+        };
+
+        console.warn = function () {
+            var obj = __getErrorObject();
+            warn(_.toArray(arguments)[0], obj);
+            return _warn.apply(console, arguments);
+        };
+
+        // Exports
+        exports.log = log;
+        exports.debug = log;
+        exports.warn = warn;
+        exports.error = error;
+        exports.clear = clearConsole;
+    }
+    __initConsoleWrapper();
 
 });
