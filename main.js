@@ -28,6 +28,7 @@ define(function (require, exports, module) {
 
 */
     var EXTENSION_ID = 'brackets-console',
+        WINDOWS_MENU_ID = EXTENSION_ID + '.windows.menus',
         SHOWPANEL_COMMAND_ID = EXTENSION_ID + '.showpanel';
 /** ------------------------------------
 
@@ -85,6 +86,7 @@ define(function (require, exports, module) {
     function _handlerPanelVisibility() {
         $appButton.toggleClass('active');
         Resizer.toggle($appPanel);
+        CommandManager.get(SHOWPANEL_COMMAND_ID).setChecked($appButton.hasClass('active'));
         if (!$appButton.hasClass('active')) {
             EditorManager.focusEditor();
         }
@@ -200,7 +202,7 @@ define(function (require, exports, module) {
 
 
     function __registerWindowsMenu(){
-        var menu = Menus.addMenu('Windows', 'brackets.penls-windows.menu', Menus.AFTER, Menus.AppMenuBar.NAVIGATE_MENU);
+        var menu = Menus.addMenu('Windows', WINDOWS_MENU_ID, Menus.AFTER, Menus.AppMenuBar.NAVIGATE_MENU);
         menu.addMenuItem(SHOWPANEL_COMMAND_ID);
     }
     __registerWindowsMenu();
