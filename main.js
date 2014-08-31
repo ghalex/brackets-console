@@ -131,9 +131,14 @@ define(function (require, exports, module) {
             var $row = $(Mustache.render(RowHTML, ln18));
             $logContainer.find('.box').first().append($row);
             $row.on('click', function(){
-                    $(this).find('quote').toggle();
+                    var q = $(this).find('quote');
+                    if ($(q).is(':visible')) {
+                        $(q).hide();
+                    } else{
+                        $(q).show().css('display', 'block'); // Display block fix;
+                    }
                 });
-            $row.find('quote').first().hide();
+            $row.find('quote').first().hide(); // Display block fix
             _updateNotifierIcon();
         }
     }

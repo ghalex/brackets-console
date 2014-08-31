@@ -23,9 +23,6 @@
             background:@dark;
             padding-bottom:2px;
             text-align: center;
-            .filters{
-                margin: 0 auto;
-            }
             .title {
                 color:@grey;
                 cursor:pointer;
@@ -39,26 +36,29 @@
                 padding:0 10px;
                 text-align: center;
             }
-            .filters > *{
-                color:@light;
-                border:0;
-                height: 100%;
-                border-radius:0;
-                margin-right: 0;
-                margin-left: 1px;
-                padding: 5px 17px;
-                background: @unactive;
-                border-top: 1px solid @unactive;
-                border-bottom: 1px solid @unactive;
-                &.clear,
-                &:hover{
-                    color:@blue;
-                    background-color: @selected;
-                    border-top: 1px solid @selected-border-top;
-                    border-bottom: 1px solid @selected-border-bottom;
+            .filters{
+                margin: 0 auto;
+                > *{
+                    color:@light;
+                    border:0;
+                    height: 100%;
+                    border-radius:0;
+                    margin-right: 0;
+                    margin-left: 1px;
+                    padding: 5px 17px;
+                    background: @unactive;
+                    border-top: 1px solid @unactive;
+                    border-bottom: 1px solid @unactive;
+                    &.clear,
+                    &:hover{
+                        color:@blue;
+                        background-color: @selected;
+                        border-top: 1px solid @selected-border-top;
+                        border-bottom: 1px solid @selected-border-bottom;
+                    }
+                    &.clear{ color:@light; }
+                    &.active{ color:@blue; }
                 }
-                &.clear{ color:@light; }
-                &.active{ color:@blue; }
             }
         }
         .table-container{
@@ -100,7 +100,7 @@
         text-align: center;
         border-radius:10px;
         text-indent:-0.15em;
-        /* hide */
+
         display: none;
 
     }
@@ -130,22 +130,23 @@
                 margin-bottom:1px;
                 line-height: 1.1em;
                 position: relative;
-                border-left: 3px solid transparent;
+                border-left: 3px solid @unactive;
                 > *{
                     color:@light;
                     display: block;
                 }
                 a{
-                    color:@light;
-                    top:0;
-                    border:0;
+                    top:5px;
                     right:5px;
+                    display: block;
                     padding:2px 5px;
-                    display: inline;
-                    background: @blue;
-                    border-radius:10px;
                     position: absolute;
+
+                    border:0;
+                    color:@light;
+                    border-radius:10px;
                     text-decoration: none;
+                    background: @unactive;
                     &:hover,
                     &:active{
                         text-decoration: none;

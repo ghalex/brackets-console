@@ -13,9 +13,6 @@
   padding-bottom: 2px;
   text-align: center;
 }
-#brackets-console-panel.bottom-panel .toolbar .filters {
-  margin: 0 auto;
-}
 #brackets-console-panel.bottom-panel .toolbar .title {
   color: #999580;
   cursor: pointer;
@@ -28,6 +25,9 @@
   color: #8fddff;
   padding: 0 10px;
   text-align: center;
+}
+#brackets-console-panel.bottom-panel .toolbar .filters {
+  margin: 0 auto;
 }
 #brackets-console-panel.bottom-panel .toolbar .filters > * {
   color: #ffffff;
@@ -90,7 +90,6 @@
   text-align: center;
   border-radius: 10px;
   text-indent: -0.15em;
-  /* hide */
   display: none;
 }
 /** --------------------------------
@@ -119,23 +118,23 @@
   margin-bottom: 1px;
   line-height: 1.1em;
   position: relative;
-  border-left: 3px solid transparent;
+  border-left: 3px solid rgba(45, 46, 48, 0.25);
 }
 #brackets-console-panel .box .line > span > * {
   color: #ffffff;
   display: block;
 }
 #brackets-console-panel .box .line > span a {
-  color: #ffffff;
-  top: 0;
-  border: 0;
+  top: 5px;
   right: 5px;
+  display: block;
   padding: 2px 5px;
-  display: inline;
-  background: #8fddff;
-  border-radius: 10px;
   position: absolute;
+  border: 0;
+  color: #ffffff;
+  border-radius: 10px;
   text-decoration: none;
+  background: rgba(45, 46, 48, 0.25);
 }
 #brackets-console-panel .box .line > span a:hover,
 #brackets-console-panel .box .line > span a:active {
