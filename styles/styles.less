@@ -117,23 +117,74 @@
         list-style-type: none;
     }
     .box{
+        clear:both;
         .line{
+            clear:both;
             width: 100%;
             overflow: hidden;
             > span{
                 color:@light;
+                display: block;
                 padding:7px 7px;
                 font-size: 0.9em;
                 margin-bottom:1px;
                 line-height: 1.1em;
-                display: inline-block;
+                position: relative;
                 border-left: 3px solid transparent;
+                > *{
+                    color:@light;
+                    display: block;
+                }
+                a{
+                    color:@light;
+                    top:0;
+                    border:0;
+                    right:5px;
+                    padding:2px 5px;
+                    display: inline;
+                    background: @blue;
+                    border-radius:10px;
+                    position: absolute;
+                    text-decoration: none;
+                    &:hover,
+                    &:active{
+                        text-decoration: none;
+                    }
+                }
+                quote{
+                    color:@light;
+                    display: block;
+                    margin-top: 10px;
+                    border-radius:4px;
+                    position: relative;
+                    padding:10px 10px 10px 10px;
+                    background:lighten(@light-dark, 5%);
+                    & b{ color:@light !important; }
+                    & > *{
+                        color:@light;
+                        display: block;
+                        margin-top:3px;
+                        position:relative;
+                    }
+                    .stacks{
+                        padding-left:10px;
+                        > *{
+                            display: block;
+                        }
+                    }
+                }
             }
             &.odd{
                 background:rgba(0, 0, 0, 0.05);
             }
             &.error > span{
-                color:@red;
+                > span{
+                    color:@red;
+                }
+                a{
+                    color:@light;
+                    background: @red;
+                }
                 border-left: 3px solid @red;
             }
         }

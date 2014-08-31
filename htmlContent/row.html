@@ -1,6 +1,15 @@
 <li class="line {{even}} {{type}}">
     <span>
         <span>{{message}}</span>
-        <strong>{{fileName}}:{{lineNumber}}:{{column}}</strong>
+        <a href="#" title="Open details">{{shortFileName}}</a>
+        <quote>
+            <b>{{fileName}}</b>
+            <em>at line: <b>{{lineNumber}}</b>, column: <b>{{columnNumber}}</b></em>
+            <span class="stacks">
+            {{#errorStacks}}
+                <small>{{.}}</small>
+            {{/errorStacks}}
+            </span>
+        </quote>
     </span>
 </li>

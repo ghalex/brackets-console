@@ -1,13 +1,8 @@
-/**
- *
- *
- * @author Alexandru Ghiura ghalex@gmail.com (https://github.com/ghalex)
- *
- */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
 /*global define, console, brackets, _, $, Mustache */
 define(function (require, exports, module) {
-    "use strict";
+
+    'use strict';
 /** ------------------------------------
 
     Modules
@@ -36,6 +31,7 @@ define(function (require, exports, module) {
 
 */
     var Strings = require('./ln18'),
+        RegexUtils = require('./lib/RegexUtils'),
         RowHTML = require('text!htmlContent/row.html'),
         PanelHTML = require('text!htmlContent/panel.html'),
         ButtonHTML = require('text!htmlContent/button.html');
@@ -94,19 +90,25 @@ define(function (require, exports, module) {
 
     function _refreshPanel(event) {
         var $this = $(event.currentTarget);
-        var name = $this.data('name');
+        // $logContainer.find('.box > *').toggle();
         $this.toggleClass('active');
-        $logContainer.find('.box .' + name).toggle();
+        $logContainer.find('.box .' + $this.data('name')).toggle();
     }
 
-    function __getErrorObject() {
-        var traces = (new Error).stack.split("\n");
-        traces.shift();
-        var current = traces[0].trim(),
-            file = current.match(/(file:\/\/)([a-zA-Z]:\\)(.)*?(.js)/gi)[0],
-            col = current.match(/(:([0-9]*))/gi)[2].split(':')[1],
-            line = current.match(/(:([0-9]*))/gi)[1].split(':')[1];
-        return { fileName: file, lineNumber: line, column: col, stack: traces };
+    function __getErrorObject(stacks) {
+        // format orginal stacks
+        var oTraces = _.filter(stacks.split("\n"), function (v) { return $.trim(v); });
+        var traces = oTraces.slice(1);
+
+        var file = traces[1].match(RegexUtils.file());
+        file = file !== null ? file.length ? file[0] : '' : '';
+        var shortFile = file !==  '' ? file.split('/')[file.split('/').length - 1] : '';
+
+        var lineAndColumn = traces[1].match(RegexUtils.lineAndColumn());
+        var line = lineAndColumn !== null ? lineAndColumn.length ? lineAndColumn[0] : '' : '';
+        var column = lineAndColumn !== null ? lineAndColumn.length ? lineAndColumn[1] : '' : '';
+
+        return { shortFileName: shortFile, fileName: file, lineNumber: line, columnNumber: column, errorStacks: traces };
     }
 /** ------------------------------------
 
@@ -126,7 +128,12 @@ define(function (require, exports, module) {
             logsCount++;
             if (_.isObject(msg)) { msg = JSON.stringify(msg); }
             var ln18 = _.extend(err, { message: msg, even: (logsCount % 2) ? 'odd' : '', type: type});
-            $logContainer.find('.box').first().append(Mustache.render(RowHTML, ln18));
+            var $row = $(Mustache.render(RowHTML, ln18));
+            $logContainer.find('.box').first().append($row);
+            $row.on('click', function(){
+                    $(this).find('quote').toggle();
+                });
+            $row.find('quote').first().hide();
             _updateNotifierIcon();
         }
     }
@@ -182,7 +189,7 @@ define(function (require, exports, module) {
 
         $('#main-toolbar .buttons').append(Mustache.render(ButtonHTML, Strings));
         $appButton = $('#' + EXTENSION_ID + '-button').on('click', _handlerPanelVisibility);
-        $($appButton).find('em').first().hide();
+        $($appButton).find('.counts').first().hide();
 
         _updateNotifierIcon();
 
@@ -195,13 +202,13 @@ define(function (require, exports, module) {
     Commands and Menus
 
 */
-    function __registerCommands(){
-        CommandManager.register( "Show Console", SHOWPANEL_COMMAND_ID, _handlerPanelVisibility);
+    function __registerCommands() {
+        CommandManager.register("Show Console", SHOWPANEL_COMMAND_ID, _handlerPanelVisibility);
     }
     __registerCommands();
 
 
-    function __registerWindowsMenu(){
+    function __registerWindowsMenu() {
         var menu = Menus.addMenu('Windows', WINDOWS_MENU_ID, Menus.AFTER, Menus.AppMenuBar.NAVIGATE_MENU);
         menu.addMenuItem(SHOWPANEL_COMMAND_ID);
     }
@@ -211,27 +218,30 @@ define(function (require, exports, module) {
     Console Proto
 
 */
-    function __initConsoleWrapper(){
+    function __initConsoleWrapper() {
         var _log = console.log,
             _warn = console.warn,
             _debug = console.debug,
             _error = console.error;
 
         console.log = function () {
-            var obj = __getErrorObject();
-            log(_.toArray(arguments)[0], obj, 'debug');
+            var obj = __getErrorObject((new Error).stack),
+                msg = _.toArray(arguments)[0];
+            log(msg, obj, 'debug');
             return _log.apply(console, arguments);
         };
 
         console.error = function () {
-            var obj = __getErrorObject();
-            error(_.toArray(arguments)[0], obj);
+            var obj = __getErrorObject((new Error).stack),
+                msg = _.toArray(arguments)[0];
+            error(msg, obj);
             return _error.apply(console, arguments);
         };
 
         console.warn = function () {
-            var obj = __getErrorObject();
-            warn(_.toArray(arguments)[0], obj);
+            var obj = __getErrorObject((new Error).stack),
+                msg = _.toArray(arguments)[0];
+            warn(msg, obj);
             return _warn.apply(console, arguments);
         };
 
