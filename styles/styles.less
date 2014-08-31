@@ -56,8 +56,14 @@
                         border-top: 1px solid @selected-border-top;
                         border-bottom: 1px solid @selected-border-bottom;
                     }
-                    &.clear{ color:@light; }
-                    &.active{ color:@blue; }
+                    &.clear{
+                        color:@dark;
+                        background:@green;
+                        &:hover{
+                            background:darken(@green, 10%);
+                        }
+                    }
+                    &.active{ color:@blue;background:@selected; }
                 }
             }
         }

@@ -49,10 +49,15 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 #brackets-console-panel.bottom-panel .toolbar .filters > *.clear {
-  color: #ffffff;
+  color: #3c3f41;
+  background: #ace539;
+}
+#brackets-console-panel.bottom-panel .toolbar .filters > *.clear:hover {
+  background: #94d01b;
 }
 #brackets-console-panel.bottom-panel .toolbar .filters > *.active {
   color: #8fddff;
+  background: #2d2e30;
 }
 #brackets-console-panel.bottom-panel .table-container {
   overflow-y: auto;

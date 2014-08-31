@@ -3,7 +3,7 @@
 define(function (require, exports, module) {
 
     'use strict';
-/** ------------------------------------
+    /** ------------------------------------
 
     Modules
 
@@ -17,7 +17,7 @@ define(function (require, exports, module) {
         ExtensionUtils = brackets.getModule('utils/ExtensionUtils'),
         CommandManager = brackets.getModule("command/CommandManager"),
         PreferencesManager = brackets.getModule('preferences/PreferencesManager');
-/** ------------------------------------
+    /** ------------------------------------
 
     Globals
 
@@ -25,7 +25,7 @@ define(function (require, exports, module) {
     var EXTENSION_ID = 'brackets-console',
         WINDOWS_MENU_ID = EXTENSION_ID + '.windows.menus',
         SHOWPANEL_COMMAND_ID = EXTENSION_ID + '.showpanel';
-/** ------------------------------------
+    /** ------------------------------------
 
     UI Templates
 
@@ -35,7 +35,7 @@ define(function (require, exports, module) {
         RowHTML = require('text!htmlContent/row.html'),
         PanelHTML = require('text!htmlContent/panel.html'),
         ButtonHTML = require('text!htmlContent/button.html');
-/** ------------------------------------
+    /** ------------------------------------
 
     Variables
 
@@ -45,7 +45,7 @@ define(function (require, exports, module) {
         errorsCount = 0,
         debugPrefs = PreferencesManager.getExtensionPrefs('debug'),
         extensionPrefs = PreferencesManager.getExtensionPrefs(EXTENSION_ID);
-/** ------------------------------------
+    /** ------------------------------------
 
     UI Variables
 
@@ -53,7 +53,7 @@ define(function (require, exports, module) {
     var $appPanel,
         $appButton,
         $logContainer;
-/** ------------------------------------
+    /** ------------------------------------
 
     Private Functions
 
@@ -90,27 +90,44 @@ define(function (require, exports, module) {
 
     function _refreshPanel(event) {
         var $this = $(event.currentTarget);
-        // $logContainer.find('.box > *').toggle();
-        $this.toggleClass('active');
-        $logContainer.find('.box .' + $this.data('name')).toggle();
+
+        $logContainer.find('.box > *').show();
+
+        var child = $this.parent().find('.active').first();
+        if (child !== null) {
+            child.removeClass('active');
+        }
+        if (child.data('name') !== $this.data('name')) {
+            $logContainer.find('.box > *').hide();
+            $this.addClass('active');
+            $logContainer.find('.box > .' + $this.data('name')).show();
+        }
     }
 
     function __getErrorObject(stacks) {
         // format orginal stacks
-        var oTraces = _.filter(stacks.split("\n"), function (v) { return $.trim(v); });
+        var oTraces = _.filter(stacks.split("\n"), function (v) {
+            return $.trim(v);
+        });
         var traces = oTraces.slice(1);
 
         var file = traces[1].match(RegexUtils.file());
         file = file !== null ? file.length ? file[0] : '' : '';
-        var shortFile = file !==  '' ? file.split('/')[file.split('/').length - 1] : '';
+        var shortFile = file !== '' ? file.split('/')[file.split('/').length - 1] : '';
 
         var lineAndColumn = traces[1].match(RegexUtils.lineAndColumn());
         var line = lineAndColumn !== null ? lineAndColumn.length ? lineAndColumn[0] : '' : '';
         var column = lineAndColumn !== null ? lineAndColumn.length ? lineAndColumn[1] : '' : '';
 
-        return { shortFileName: shortFile, fileName: file, lineNumber: line, columnNumber: column, errorStacks: traces };
+        return {
+            shortFileName: shortFile,
+            fileName: file,
+            lineNumber: line,
+            columnNumber: column,
+            errorStacks: traces
+        };
     }
-/** ------------------------------------
+    /** ------------------------------------
 
     Console Functions
 
@@ -126,19 +143,26 @@ define(function (require, exports, module) {
     function log(msg, err, type) {
         if ($logContainer !== null) {
             logsCount++;
-            if (_.isObject(msg)) { msg = JSON.stringify(msg); }
-            var ln18 = _.extend(err, { message: msg, even: (logsCount % 2) ? 'odd' : '', type: type});
-            var $row = $(Mustache.render(RowHTML, ln18));
+            if (_.isObject(msg)) {
+                msg = JSON.stringify(msg);
+            }
+            var q,
+                ln18 = _.extend(err, {
+                    message: msg,
+                    even: (logsCount % 2) ? 'odd' : '',
+                    type: type
+                }),
+                $row = $(Mustache.render(RowHTML, ln18));
             $logContainer.find('.box').first().append($row);
-            $row.on('click', function(){
-                    var q = $(this).find('quote');
-                    if ($(q).is(':visible')) {
-                        $(q).hide();
-                    } else{
-                        $(q).show().css('display', 'block'); // Display block fix;
-                    }
-                });
-            $row.find('quote').first().hide(); // Display block fix
+            $row.on('click', function () {
+                q = $(this).find('quote');
+                if ($(q).is(':visible')) {
+                    $(q).hide();
+                } else {
+                    $(q).show().css('display', 'block'); // Display block fix;
+                }
+            });
+            $row.find('quote').first().hide();
             _updateNotifierIcon();
         }
     }
@@ -156,7 +180,7 @@ define(function (require, exports, module) {
             log(msg, err, 'error');
         }
     }
-/** ------------------------------------
+    /** ------------------------------------
 
     Extension Inits
 
@@ -202,7 +226,7 @@ define(function (require, exports, module) {
     });
 
     AppInit.appReady(function () {});
-/** ------------------------------------
+    /** ------------------------------------
 
     Commands and Menus
 
@@ -218,7 +242,7 @@ define(function (require, exports, module) {
         menu.addMenuItem(SHOWPANEL_COMMAND_ID);
     }
     __registerWindowsMenu();
-/** ------------------------------------
+    /** ------------------------------------
 
     Console Proto
 
