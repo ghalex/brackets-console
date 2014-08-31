@@ -120,11 +120,11 @@ define(function (require, exports, module) {
         var column = lineAndColumn !== null ? lineAndColumn.length ? lineAndColumn[1] : '' : '';
 
         return {
-            shortFileName: shortFile,
             fileName: file,
             lineNumber: line,
+            errorStacks: traces,
             columnNumber: column,
-            errorStacks: traces
+            shortFileName: shortFile
         };
     }
     /** ------------------------------------
