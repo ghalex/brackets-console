@@ -1,65 +1,15 @@
-<div id="editor-console" class="collapsible"></div>
-<div id="editor-console-toolbar">
-    <a id="show-hide" href="#">Show/Hide</a>
-    <a id="clear" href="#">Clear</a>
+<div id="editor-console" class="bottom-panel vert-resizable top-resizer">
+    <div class="toolbar simple-toolbar-layout mainToolbar">
+        <span class="title">Console</span>
+        <button id="btnClear" class="btn small margin-left">Clear</button>
+        
+        <div id="filterBtns" class="btn-group margin-left-small">
+            <button id="btnErrors" class="btn small disabled" data-filter="error"><span class="glyphicon glyphicon-star"></span> Errors</button>
+            <button id="btnWarnings" class="btn small disabled" data-filter="warn">Warnings</button>
+            <button id="btnLogs" class="btn small" data-filter="log">Logs</button>
+        </div>
+        <a href="#" class="close">&times;</a>
+    </div>
+    <div class="console resizable-content">
+    </div>
 </div>
-
-<style>
-    #editor-console
-    {
-        border-top: 1px solid #CCC;
-        height: 140px;
-        overflow-y: scroll;
-        position: relative;
-    }
-	
-	#editor-console input {
-		display: block;
-		margin: 0px;
-		border: none;
-		background: none;
-		width: 90%;
-		color: #000000;
-		box-shadow: none;
-		padding: 2px 6px;
-	}
-	
-	*:focus {
-		outline: 0 !important;
-	}
-	
-    #editor-console input.error
-    {
-        color: #FF0000;
-    }
-    
-    #editor-console-toolbar
-    {
-        line-height: 20px;
-        background-color: #F8F8F8;
-        border-top: 1px solid #CCC;
-        font-family: 'SourceSansPro', Helvetica, Arial, "Meiryo UI", "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
-        font-size: 0.9em;
-    }    
-    
-    #editor-console-toolbar a
-    {
-        margin: 0px 8px;
-        color: gray;
-    }
-    
-	#editor-console.light-table {
-		border-top: 1px solid #2B2B2B;
-		background: #202020;
-	}
-	
-	#editor-console.light-table input {
-		color: #84E2FF;
-	}
-	
-	#editor-console-toolbar.light-table {
-		background-color: #3C3F41;
-		border-top: 1px solid #3C3F41;
-	}
-	
-</style>

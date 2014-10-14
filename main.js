@@ -1,106 +1,150 @@
-/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50 */
+/*jslint vars: true, plusplus: true, nomen: true */
 /*global define, console, brackets, $, Mustache */
 
 define(function (require, exports, module) {
     "use strict";
     
-    var AppInit       		= brackets.getModule("utils/AppInit"),
-        Resizer       		= brackets.getModule("utils/Resizer"),
-		PreferencesManager  = brackets.getModule("preferences/PreferencesManager"),
-        ConsoleHTML   		= require("text!html/console.html"),
-		preferences 		= PreferencesManager.getPreferenceStorage("extensions.Themes-for-brackets");
+    var AppInit = brackets.getModule("utils/AppInit"),
+        WorkspaceManager = brackets.getModule("view/WorkspaceManager"),
+        ExtensionUtils = brackets.getModule("utils/ExtensionUtils"),
+		PreferencesManager = brackets.getModule("preferences/PreferencesManager");
     
-    var _init = false;
-    var $console,
-		$consoleToolbar,
-        $showHide,
-        $clear;
+    var panel,
+        icon = null,
+        panelHTML = require("text!html/console.html");
+        
+    icon = $("<a id='console-toolbar-icon' href='#'> </a>");
+    icon.attr("title", "Console");
+    icon.appendTo($("#main-toolbar .buttons"));
     
-    var logsNr = 0;
+    var logData = [],
+        filters = {error: false, log: true, warn: false};
 	
+    function clear() {
+        var $console = panel.$panel.find(".console");
+        $console.html("");
+    }
+    
+    function flush() {
+        logData = [];
+    }
+    
+    function filter(data) {
+        var i = 0,
+            result = [];
+        
+        for (i = 0; i < data.length; i++) {
+            if (filters[data[i].type]) {
+                result.push(data[i]);
+            }
+        }
+        
+        return result;
+    }
+    
+    function render() {
+		var $console = panel.$panel.find(".console"),
+            $element = "",
+			data = filter(logData),
+			i = 0;
+        
+        clear();
+        
+		for (i = 0; i < data.length; i++) {
+            $element = $("<input type='text' />");
+            
+            $element.val(data[i].text);
+            $element.addClass(data[i].type);
+            
+			//$console.append("<span class='icon icon-console-" + data[i].type + "'>");
+			$console.append($element);
+		}
+		
+        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
+	}
+    
     /**
      * Logs a message to console.
      * @param msg
      */
-    function log(msg) {
+    function add(msg, type) {
 		var texts = msg.toString().split('\n'),
-			i = 0,
-			oddClass = (logsNr % 2) ? "odd" : "";
+			i = 0;
 		
-		for(i = 0; i < texts.length; i++) {
-			$console.append("<input type='text' class='log " + oddClass + "' value='" + texts[i] + "'/>");
+		for (i = 0; i < texts.length; i++) {
+			logData.push({type: type, text: texts[i]});
 		}
-		
-        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
         
-        logsNr++;
+        render();
     }
     
-    function error(msg) {
-        var texts = msg.toString().split('\n'),
-			i = 0,
-			oddClass = (logsNr % 2) ? "odd" : "";
-        
-		for(i = 0; i < texts.length; i++) {
-			$console.append("<input type='text' class='error " + oddClass + "' value='" + texts[i] + "'/>");
-		}
+    function togglePanel() {
 		
-        $console.animate({ scrollTop: $console[0].scrollHeight }, 10);        
-        logsNr++;
-    }
-    
-    function clear() {
-        $console.html("");
-        logsNr = 0;
+        if (panel.isVisible()) {
+            panel.hide();
+			icon.removeClass("on");
+        } else {
+            panel.show();
+			icon.addClass("on");
+        }
     }
     
     AppInit.htmlReady(function () {
-        $(ConsoleHTML).insertAfter("#status-bar");
-
-        _init = true;		
-        $console = $("#editor-console");
-		$consoleToolbar = $("#editor-console-toolbar");
-        $showHide = $("#editor-console-toolbar > #show-hide");
-        $clear =  $("#editor-console-toolbar > #clear");
         
-		
-		if (preferences) {
-			var theme = preferences.getValue("theme");
-			
-			$console.addClass(theme);
-			$consoleToolbar.addClass(theme);
-		}
-	
-        $showHide.click(function () {
-            Resizer.toggle($console);
-        });
+        ExtensionUtils.loadStyleSheet(module, "style/style.css");
         
-        $clear.click(function () {
+        panel = WorkspaceManager.createBottomPanel("console.panel", $(panelHTML));
+        panel.show();
+        
+        panel.$panel.find("#btnClear").on("click", function () {
             clear();
+            flush();
         });
         
-        Resizer.makeResizable($console.get(0), Resizer.DIRECTION_VERTICAL, Resizer.POSITION_BOTTOM, 0);
+        panel.$panel.find("#filterBtns > button").on("click", function () {
+            
+            var filter = $(this).attr('data-filter');
+            
+            filters[filter] = !filters[filter];
+            
+            clear();
+            render();
+            
+            if (!filters[filter]) {
+                $(this).addClass('disabled');
+            } else {
+                $(this).removeClass('disabled');
+            }
+        });
+        
+        panel.$panel.find(".close").on("click", function () {
+            panel.hide();
+        });
+
     });
     
-    var _log = console.log;
-    var _error = console.error;
+    var _log = console.log,
+        _warn = console.warn,
+        _error = console.error;
     
     console.log = function () {
         var arg = arguments;
         
-        log(arg[0]);
+        add(arg[0], 'log');
         return _log.apply(console, arguments);
+    };
+    
+    console.warn = function () {
+        var arg = arguments;
+        
+        add(arg[0], 'warn');
+        return _warn.apply(console, arguments);
     };
     
     console.error = function () {
         var arg = arguments;
         
-        error(arg[0]);
+        add(arg[0], 'error');
         return _error.apply(console, arguments);
     };
-    
-    // Exports
-    exports.log = log;
-    exports.error = error;
-    exports.clear = clear;
 });
