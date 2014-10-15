@@ -144,6 +144,7 @@ define(function (require, exports, module) {
         
         panel.$panel.find(".close").on("click", function () {
             panel.hide();
+            icon.removeClass("on");
         });
         
         icon.on("click", togglePanel);
