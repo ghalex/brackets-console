@@ -33,3 +33,16 @@
 #editor-console .console > input.warn {
     color: rgb(112, 112, 0);
 }
+
+
+#editor-console-icon {
+    background: url("../assets/icon.png");
+    background-size: 22px;
+    background-position: center;
+}
+
+#editor-console-icon.on {
+    background: url("../assets/icon-on.png");
+    background-size: 22px;
+    background-position: center;
+}

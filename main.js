@@ -13,7 +13,7 @@ define(function (require, exports, module) {
         icon = null,
         panelHTML = require("text!html/console.html");
         
-    icon = $("<a id='console-toolbar-icon' href='#'> </a>");
+    icon = $("<a id='editor-console-icon' href='#'> </a>");
     icon.attr("title", "Console");
     icon.appendTo($("#main-toolbar .buttons"));
     
@@ -94,7 +94,7 @@ define(function (require, exports, module) {
         ExtensionUtils.loadStyleSheet(module, "style/style.css");
         
         panel = WorkspaceManager.createBottomPanel("console.panel", $(panelHTML));
-        panel.show();
+        //panel.show();
         
         panel.$panel.find("#btnClear").on("click", function () {
             clear();
@@ -120,6 +120,8 @@ define(function (require, exports, module) {
         panel.$panel.find(".close").on("click", function () {
             panel.hide();
         });
+        
+        icon.on("click", togglePanel);
 
     });
     
