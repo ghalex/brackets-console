@@ -20,13 +20,33 @@ define(function (require, exports, module) {
     var logData = [],
         filters = {error: false, log: true, warn: false};
 	
+    function count(data, type) {
+        
+        var i = 0,
+            result = 0;
+        
+        for (i = 0; i < data.length; i++) {
+            if (data[i].type === type) {
+                result++;
+            }
+        }
+        
+        return result;
+    }
+    
     function clear() {
         var $console = panel.$panel.find(".console");
         $console.html("");
     }
     
     function flush() {
+        var countBtns = panel.$panel.find(".label");
+        
         logData = [];
+        
+        $(countBtns[0]).html(count(logData, 'error'));
+        $(countBtns[1]).html(count(logData, 'warn'));
+        $(countBtns[2]).html(count(logData, 'log'));
     }
     
     function filter(data) {
@@ -45,6 +65,7 @@ define(function (require, exports, module) {
     function render() {
 		var $console = panel.$panel.find(".console"),
             $element = "",
+            countBtns = panel.$panel.find(".label"),
 			data = filter(logData),
 			i = 0;
         
@@ -61,6 +82,10 @@ define(function (require, exports, module) {
 		}
 		
         $console.animate({ scrollTop: $console[0].scrollHeight }, 10);
+        
+        $(countBtns[0]).html(count(logData, 'error'));
+        $(countBtns[1]).html(count(logData, 'warn'));
+        $(countBtns[2]).html(count(logData, 'log'));
 	}
     
     /**

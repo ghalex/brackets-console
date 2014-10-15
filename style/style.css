@@ -46,3 +46,10 @@
     background-size: 22px;
     background-position: center;
 }
+
+#editor-console .label {
+    text-shadow: none;
+    margin-left: 4px;
+    margin-bottom: -1px;
+    margin-right: -6px;
+}
