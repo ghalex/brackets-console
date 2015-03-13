@@ -60,7 +60,7 @@ define(function (require, exports, module) {
             clear();
         });
         
-        Resizer.makeResizable($console.get(0), Resizer.DIRECTION_VERTICAL, Resizer.POSITION_BOTTOM, 0);
+        Resizer.makeResizable($console.get(0), Resizer.DIRECTION_VERTICAL, Resizer.POSITION_TOP, 0);
     });
     
     var _log = console.log;
