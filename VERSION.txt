@@ -1,0 +1,9 @@
+1.4.1
+-------------------
+[ ADD ] - Support for live preview
+[ FIX ] - HTML typos
+
+1.4.0
+-------------------
+[ ADD ] - Ability to filter
+[ ADD ] - Console icon
