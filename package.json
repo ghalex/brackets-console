@@ -1,10 +1,18 @@
 {
     "name": "brackets-console",
     "title": "Console",
-    "version": "1.0.0",
-    "description": "Shows console.log & console.error without developer tools.",
+    "version": "1.3.31",
+    "description": "Shows console.log & console.error & console.warn without developer tools. [NEW][v1.3.31] Added support for filters (logs/errors/warns) & brackets themes",
     "homepage": "https://github.com/aghiura/brackets-console",
-    "author": "Alexandru Ghiura ghalex@gmail.com (https://github.com/ghalex)",
+    "author": {
+        "name": "Alexandru Ghiura",
+        "email": "ghalex@gmail.com",
+        "url": "https://github.com/ghalex"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ghalex/brackets-console.git"
+    },
     "license": "MIT",
     "categories":"general",
     "keywords": [

@@ -1,44 +1,26 @@
-<div id="editor-console" class="collapsible"></div>
-<div id="editor-console-toolbar">
-    <a id="show-hide" href="#">Show/Hide</a>
-    <a id="clear" href="#">Clear</a>
-</div>
+<div id="editor-console" class="bottom-panel vert-resizable top-resizer">
+    <div class="toolbar simple-toolbar-layout mainToolbar">
+        <span class="title">Console</span>
+        <button id="btnClear" class="btn small margin-left">Clear</button>
+        <button id="btnLivePreviewOnly" class="btn small disabled">
+            Live Preview Only
+        </button>
 
-<style>
-    #editor-console
-    {
-        border-top: 1px solid #CCC;
-        height: 140px;
-        overflow-y: scroll;
-        position: relative;
-    }
-    
-    #editor-console p
-    {
-        margin: 2px 2px;
-        font-size: 13px;
-        font-size: 14px;
-        font-family: monospace;
-    }
-    
-    #editor-console p.error
-    {
-        color: #FF0000;
-    }
-    
-    #editor-console-toolbar
-    {
-        line-height: 20px;
-        background-color: #F8F8F8;
-        border-top: 1px solid #CCC;
-        font-family: 'SourceSansPro', Helvetica, Arial, "Meiryo UI", "ＭＳ Ｐゴシック", "MS PGothic", sans-serif;
-        font-size: 0.9em;
-    }    
-    
-    #editor-console-toolbar a
-    {
-        margin: 0px 8px;
-        color: gray;
-    }
-    
-</style>
+        <div id="filterBtns" class="btn-group margin-left-small">
+            <button id="btnErrors" class="btn small disabled" data-filter="error">
+                Errors <span class="label">0</span>
+            </button>
+
+            <button id="btnWarnings" class="btn small disabled" data-filter="warn">
+                Warnings <span class="label">0</span>
+            </button>
+
+            <button id="btnLogs" class="btn small" data-filter="log">
+                Logs <span class="label">0</span>
+            </button>
+        </div>
+        <a href="#" class="close">&times;</a>
+    </div>
+    <div class="console resizable-content">
+    </div>
+</div>
